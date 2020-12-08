@@ -1,0 +1,8 @@
+version: '3'
+services:
+  spoilersbot:
+    build: .
+    volumes:
+      - './app/db:/usr/src/app/db'
+      - './app/log:/usr/src/app/log'
+    command: python startbot.py

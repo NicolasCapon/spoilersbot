@@ -1,0 +1,30 @@
+import pathlib
+import os
+import logging
+
+# General config
+src_dir = pathlib.Path(__file__).parent.absolute()
+db = f"sqlite:///{os.path.join(src_dir, 'db', 'spoilersBot.db')}"
+log_file = os.path.join(src_dir, 'log', 'spoilersBot.log')
+log_level = logging.INFO
+logging.basicConfig(format='%(asctime)s - %(threadName)s - %(name)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filename=log_file,
+                    level=log_level)
+
+# Telegram config
+telegram_token =
+chat_id =
+admin_id =
+
+# Reddit config
+client_id =
+client_secret =
+password =
+user_agent =
+username =
+
+# Yolo config
+model = os.path.join(src_dir, 'yolo', 'yolov4_custom_train_last.weights')
+classes = ["card"]
+conf = os.path.join(src_dir, 'yolo', 'yolov4_custom_test.cfg')

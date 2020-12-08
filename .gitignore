@@ -1,0 +1,14 @@
+# ignore all logs, db and config
+*.log
+*.db
+.gitignore
+config.py
+
+# ignore venv & git and tools
+venv/
+build/
+labelImg-master/
+.git/
+.idea/
+opencv-master/
+__pycache__/
