@@ -2,7 +2,7 @@
 *.log
 *.db
 .gitignore
-.weights
+*.weights
 config.py
 
 # ignore venv & git and tools
