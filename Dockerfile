@@ -15,5 +15,9 @@ RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
 # copy the content of the local src directory to the working directory
 COPY ./app /usr/src/app
 
+# Create empty dir for log and database files
+RUN mkdir -p /usr/src/app/log
+RUN mkdir -p /usr/src/app/db
+
 # command to run on container start
 CMD [ "python", "./startbot.py" ]
