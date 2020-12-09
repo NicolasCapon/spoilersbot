@@ -39,3 +39,20 @@ Currently, the bot uses image histograms to compute similarity (phash was first 
 
 The other part is the yolo v4 machine learning algorithm used on the reddit crawl. Nowadays a lots of spoilers are served on reddit in batches, which means a single image can contains 2 to 4 images of new cards, sometimes even more with a background. These types of images cant be compared as it is because we compare single card images. The yolo model was built to detect cards on a image and extract them. The result of a image containing 4 cards is now 4 images of the cards themselves ready to be compared.
 
+## Yolo v4 image detection
+
+### Tackle the problem
+I trained a [YOLO v4](https://arxiv.org/abs/2004.10934) model to solve images like this:
+![](https://i.redd.it/lef7sla7l6x51.jpg)
+These are impossible to compare to normal card image in term of similarity.
+I first try to solve this problem with regular image processing methods but with extended art cards like the one on the right the edge is even harder to find. Moreover the diversity of possible backgrounds makes the task to hard.
+That's why I trained a machine learning model to detect MTG card in image.
+
+### Training
+TODO
+
+### Results
+TODO
+
+## Image Similarity
+TODO
