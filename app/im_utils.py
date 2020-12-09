@@ -218,7 +218,7 @@ def imread_url(url, flags=cv.IMREAD_UNCHANGED):
 
 
 def generate_yolo_image(folder, cards):
-    # cards = [scryfall.get_random_card() for i in range(im_num+1)]
+    #cards = [scryfall.get_random_card() for i in range(im_num+1)]
     background = imread_url(scryfall.get_image_urls(cards.pop(), size="art_crop")[0])
     if background is not None:
         images = []
@@ -241,16 +241,8 @@ def write_yolo_label_image(filename, class_id, positions):
 
 def create_archive(directory, filename):
     import tarfile
-    with tarfile.open(os.path.join(os.path.dirname(directory), f"{filename}.tar.gz"), "w:gz") as tar:
+    with tarfile.open(os.path.join(directory, f"{filename}.tar.gz"), "w:gz") as tar:
         for file in tqdm.tqdm(os.listdir(directory)):
             filepath = os.path.join(directory, file)
             tar.add(filepath, arcname=os.path.basename(filepath))
-
-
-if __name__ == "__main__":
-    pass
-
-
-
-
 

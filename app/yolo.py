@@ -91,6 +91,54 @@ class Yolo:
 
 
 if __name__ == "__main__":
-    pass
+    # Generate yolo dataset for training
+    import scryfall
+    import config
+    import random
+    import tqdm
+    import os
+    # The population of images matters
+    # we need card as close as possible of freshly revealed one
+    # -> We generate images with only card with the new MTG frame
+    regular_image_number = 3
+    extended_art_image_number = 2
+    min_cards_per_images = 2
+    max_cards_per_images = 5
+    
+    # Create generated image directory if not exists
+    directory = os.path.join(config.src_dir, 'yolo', 'images')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print(f"Create images directory at {directory}")
+
+    # Create classes file for yolo training
+    classes = "\n".join(config.classes)
+    with open(os.path.join(directory, "classes.txt"), "w") as f:
+        f.write(classes)
+
+    # Generate extended art card images
+    print("Fetch extended art cards on https://scryfall.com/. This may take a while...")
+    cards = scryfall.search(frame="extendedart")
+    tq = tqdm.tqdm(range(extended_art_image_number))
+    tq.set_description(f"Step 1/3: Extended art card image generation")
+    for n in tq:
+        random.shuffle(cards)
+        im_num = random.randrange(min_cards_per_images, max_cards_per_images+1)
+        im_utils.generate_yolo_image(directory, cards[0:im_num])
+
+    # Generate regular card images
+    print("Fetch regular art cards on https://scryfall.com/. This may take a while...")
+    cards = scryfall.search(frame="2015")
+    tq = tqdm.tqdm(range(extended_art_image_number))
+    tq.set_description(f"Step 2/3: Regular art card image generation")
+    for n in tq:
+        random.shuffle(cards)
+        im_num = random.randrange(min_cards_per_images, max_cards_per_images+1)
+        im_utils.generate_yolo_image(directory, cards[0:im_num])
+    
+    print("Step 3/3: Archive generation, wait for Success message...")
+    # Create archive for google collab purposes
+    im_utils.create_archive(os.path.join(config.src_dir, 'yolo'), "images")
+    print(f"Successfully generated archive {os.path.join(config.src_dir, 'yolo', 'images.tar.gz')}")
 
 

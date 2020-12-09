@@ -3,9 +3,11 @@
 *.db
 .gitignore
 *.weights
+*.tar.gz
 config.py
 
 # ignore venv & git and tools
+app/yolo/images
 venv/
 build/
 labelImg-master/

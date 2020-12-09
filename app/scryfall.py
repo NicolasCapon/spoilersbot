@@ -203,4 +203,4 @@ def to_datetime(s: str):
 
 
 if __name__ == "__main__":
-    print([s.get("code") for s in get_futur_sets()])
+    print(search(frame="2015")[0])
