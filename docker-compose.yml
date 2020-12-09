@@ -5,4 +5,9 @@ services:
     volumes:
       - './app/db:/usr/src/app/db'
       - './app/log:/usr/src/app/log'
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
     command: python startbot.py
+
