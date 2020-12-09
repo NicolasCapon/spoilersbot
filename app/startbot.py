@@ -22,7 +22,7 @@ def main():
     updater.start_polling()
     SpoilerController(updater=updater)
     logging.info("Spoiler Bot Started")
-    updater.bot.send_message(chat_id=config.chat_id,
+    updater.bot.send_message(chat_id=config.admin_id,
                              text="Bot started")
 
     # Run the bot until the you presses Ctrl-C or the process receives SIGINT,
