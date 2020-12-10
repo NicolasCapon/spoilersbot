@@ -48,11 +48,59 @@ Those are impossible to compare to normal card image in terms of similarities.
 I first try to solve this problem with regular image processing methods, but with extended art cards like the one on the right, the edge is even harder to find. Moreover the diversity of possible backgrounds makes the task too hard.
 That's why I trained a machine learning model to detect MTG card in image.
 
-### Training
-TODO
+### Create a proper training dataset
+Since the goal is to detect new cards in an image, i started to look on reddit for the lastly revealed cards.
+On reddit, cards are commonly revealed with "spoiler" flair and a title including the card set code in between bracket. 
+For the image below, corresponding title was ["[CMR] Akroma, Vision of Ixidor and Akroma's Will (Source: Ashlen Rose on YT)"](https://www.reddit.com/r/magicTCG/comments/jnswxw/cmr_akroma_vision_of_ixidor_and_akromas_will/)
+With those search criterias I gathered approximately 30 images and started labelling them with [labelImg](https://github.com/tzutalin/labelImg).
+The task was really tedious and I needed 10 times more images at least. That's why I started to think about generating synthetic datas.
+Since all these images were not photos or real object, generating images of random cards onto a background was the trick to lazyly create thousands of images and boxes indicating positions of the cards inside.
+
+You can find in [yolo.py](https://github.com/NicolasCapon/spoilersbot/blob/master/app/yolo.py) the algorithm I used to generate the dataset.
+Basically the steps are:
+1. Pick random cards with the modern MTG layout (to have images as close as possible to the modern card design)
+2. Use the illustration of one of them as background
+3. Overlay 2 to 4 cards onto the background
+4. Save the image and the file indicating coordinates of the cards
+
+With this method, I produced over 3000 images and labels.
+
+### Training a model
+To solve this problem I picked yolo for differents reasons:
+- The algorithm was designed to detect objects in image
+- Since I'm working on a raspberry pi I needed something compatible and not to heavy
+- Lot of tutorials and supports are available online, and it's my first go on artificial intelligence algorithms.
+- It can be used on [Google Collab](https://colab.research.google.com/) a free online plateform that let's you train models for 24h.
+
+As a first dive into AI training, I used [Pysource video](https://www.youtube.com/watch?v=_FNfRtXEbr4&t) to learn the basics. Thanks to this video I had a google collab notebook ready to train my model with yolo v3 and a quick python script to test it.
+I managed to get the job done but realized I can upgrade to yolo v4. I tweaked the notebook ([which can be find here](https://github.com/NicolasCapon/spoilersbot/blob/master/app/yolo/Train_YoloV4_.ipynb)) and trained it for as long as possible, resulting in over 6000 iterations.
 
 ### Results
-TODO
+Comparing to classic image processing method, the AI is by far superior:
+- It can detects if an image contains no cards
+- Cards with no edge are now detected with accuracy
+- Even images showing only a card itself are classified as cards
+The only downside is that sometimes some rectangles are detected as cards. But since all cards have the same width and height, I solved this issue by discarding all rectangles with a wrong size ratio, reducing significantly the number of false positives.
+
+I trained few models before this one, with less images and less time.
+With approximately 1000 images and and 3h of training, the results were poor, especially on extended art cards. That's why I started included them in the dataset by a good amount.
 
 ## Image Similarity
-TODO
+
+### Why using it ?
+Since I'm using 3 different sources for new cards, the bot gonna encounter lots of duplicate we dont want to see on the channel. Even on a source like Reddit, a card can be published multiple times.
+
+### How to compare images
+This subject is large and difficult but in general you want to choose :
+- a way to descript your images
+- a way mesure the distance between descriptors.
+
+My first idea was to use [perceptual hashing](https://en.wikipedia.org/wiki/Perceptual_hashing) because it's fast and I saw a lot of projects using this strategy. But after many tests, the result were not concluant enough. A bunch of images with a same dominant color were showing a similarity score as if they were the same card. Even when I was comparing only illustrations.
+I choosed to take a more ressources heavy method, histograms. Histograms show the repartition of each color within the image and they can be compared to each other.
+This method show more reliant results but is also slower than hashing. In our case, the computational time is not what matter the most, the accuracy is. Moreover, the population of candidate for duplicates is rather small (around 300 cards) because I make sure to remove candidates that are to old (all cards detected for more than one month are discarded).
+
+Other comparison methods could also be considered like:
+- [Feature Matching with FLANN](https://docs.opencv.org/3.4/d5/d6f/tutorial_feature_flann_matcher.html) who aims at finding gradient to describe images
+- [Bags of words](https://towardsdatascience.com/bag-of-visual-words-in-a-nutshell-9ceea97ce0fb) who search for common features in images
+
+For now I will stick with histogram comparaison because I lack of results to see if this method is enough to solve most of duplicates. Also the implementation is quite easy. But there is tons of improvements that can be considered.
