@@ -39,15 +39,13 @@ class SpoilerDetector:
         :param confidence: minimum distance between hashes to remove duplicates
         :return: initial list minus duplicates
         """
-        descriptors = [i.descr for i in images]
-        indexes = []
-        for image in images:
-            for d, h in im_utils.get_closest_hashes(image.descr, descriptors):
+        copy_images = images
+        for n, image in enumerate(images):
+            descriptors = [i.descr for i in copy_images]
+            for d, h in im_utils.get_closest_match(image, descriptors):
                 if d < confidence and not d == 0:
-                    indexes.append(descriptors.index(h))
-        for ind in indexes:
-            del images[ind]
-        return images  # [i for i in images if i.phash in phashes]
+                    del copy_images[n]
+        return copy_images
 
     @staticmethod
     def is_duplicate(image, descriptors, confidence=29):
