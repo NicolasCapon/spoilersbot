@@ -45,6 +45,7 @@ class SpoilerDetector:
             for d, h in im_utils.get_closest_match(image, descriptors):
                 if d < confidence and not d == 0:
                     del copy_images[n]
+                    break
         return copy_images
 
     @staticmethod
