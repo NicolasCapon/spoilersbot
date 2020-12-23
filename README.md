@@ -104,3 +104,8 @@ Other comparison methods could also be considered like:
 - [Bags of words](https://towardsdatascience.com/bag-of-visual-words-in-a-nutshell-9ceea97ce0fb) who search for common features in images
 
 For now I will stick with histogram comparaison because I lack of results to see if this method is enough to solve most of duplicates. Also the implementation is quite easy. But there is tons of improvements that can be considered.
+
+## TODO
+- Improve log (daily file)
+- Improve Mythic spoiler detector
+- Test Orb comparaison instead of histograms

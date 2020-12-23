@@ -97,7 +97,6 @@ def import_scryfall_set(s, digital=None):
 
 def update_sets():
     local_session = Session()
-    logging.info("Start DB update on Sets")
     sets_ref = [s.code for s in local_session.query(Set.code)]
     sets = [s for s in scryfall.get_set_list() if s["code"] not in sets_ref and not s["digital"]]
     s_cpt = 0
@@ -105,7 +104,6 @@ def update_sets():
         if import_scryfall_set(s):
             s_cpt += 1
     local_session.commit()
-    logging.info(f"Successfully added {s_cpt} new Set(s).")
 
 
 Base.metadata.create_all(engine)

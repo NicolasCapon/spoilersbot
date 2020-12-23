@@ -124,7 +124,7 @@ class SpoilerController:
             logging.info(f"Yolo found {len(subspoilers_images)} cards on {len(images)} images.")
             # Remove potentiel duplicate within the submission itself
             subspoilers_images = self.sd.remove_duplicates(subspoilers_images, confidence=30)
-            logging.info(f"Remove duplicate, list down to {len(subspoilers_images)} cards after filtration.")
+            logging.info(f"Remove duplicate in self, list down to {len(subspoilers_images)} cards after filtration.")
 
             set_code = self.sd.detect_set(submission.title)
             s = local_session.query(Set).filter(Set.code == set_code).first()
@@ -132,7 +132,6 @@ class SpoilerController:
             sub_spoiler = []
             for image in subspoilers_images:
                 if not self.sd.is_duplicate(image, [s.image.descr for s in self.spoiled]):
-                    logging.info(f"New spoiler detected. create it then send it.")
                     sp = Spoiler(url=link,
                                  source=SpoilerSource.REDDIT.value,
                                  source_id=submission.id,
@@ -144,7 +143,7 @@ class SpoilerController:
                     self.spoiled.append(sp)
                     sub_spoiler.append(sp)
                 else:
-                    logging.info("Filtration found a duplicate")
+                    logging.info("Filtration found a duplicate in DB.")
             # Create a message with reddit submission link then send images only
             if len(sub_spoiler):
                 text = f"{len(sub_spoiler)} new spoiler(s) found on <a href='{link}'>reddit</a> !"
