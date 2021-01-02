@@ -146,11 +146,6 @@ class SpoilerController:
                     config.bot_logger.info("Filtration found a duplicate in DB.")
             # Create a message with reddit submission link then send images only
             if len(sub_spoiler):
-                text = f"{len(sub_spoiler)} new spoiler(s) found on <a href='{link}'>reddit</a> !"
-                context.bot.send_message(chat_id=config.chat_id,
-                                         text=text,
-                                         parse_mode="HTML",
-                                         disable_web_page_preview=True)
                 for spoil in sub_spoiler:
                     self.send_spoiler(spoil, context)
             local_session.commit()
