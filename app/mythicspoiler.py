@@ -8,8 +8,8 @@ class MythicSpoiler:
     """Class specifically designed to extract card and set info on mythicspoiler.com"""
 
     url = "https://mythicspoiler.com/"
-    page_reg = r'^cards\/.*\.html|jpg|png$'  # reg to find all card pages
-    img_reg = r'^cards\/.*\.jpg|png$'  # reg to find all card images
+    page_reg = r'cards\/.*\.html|jpg|png$'  # reg to find all card pages
+    img_reg = r'cards\/.*\.jpg|png$'  # reg to find all card images
     # Card types figuring on card page:
     card_types = {"CARD NAME": "name",
                   "MANA COST": "cmc",
@@ -19,6 +19,36 @@ class MythicSpoiler:
                   "ILLUS": "artist",
                   "Set Number": "set_num",
                   "P/T": "p/t"}
+
+    def get_cards_from_news(self):
+        """
+        Fetch /newspoilers.html and return all cards
+        :return: list of tuple (card_url, card_image_url, expansion)
+        """
+        r = requests.get(self.url + "newspoilers.html")
+        if r.ok:
+            soup = BeautifulSoup(r.text, 'html.parser')
+        else:
+            return []
+        tags = soup.find_all('a', {'href': re.compile(self.page_reg)})
+        cards = []
+        for tag in tags:
+            page = self.url + tag.get("href", "").replace("\n", "")
+            image_url = None
+            if ".html" not in os.path.splitext(tag.get("href"))[1]:
+                page = None
+            if tag.img:
+                image_url = self.url + tag.img.get("src", "").replace("\n", "")
+            if page:
+                reg = re.compile("https://mythicspoiler\.com\/(.*)\/cards/")
+                match = reg.findall(page)
+                if len(match):
+                    expansion = match[0]
+                else:
+                    expansion = None
+            if image_url:
+                cards.append((page, image_url, expansion))
+        return cards
 
     def get_cards_from_set(self, set_code):
         """ Return tuple (page_url, image_url)
@@ -81,5 +111,5 @@ class MythicSpoiler:
 
 if __name__ == "__main__":
     m = MythicSpoiler()
-    c = m.get_cards_from_set("cc1")  # ['tsr', 'cc1']
+    c = m.get_cards_from_news()  # ['tsr', 'cc1']
     print(c)

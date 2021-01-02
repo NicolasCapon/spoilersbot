@@ -72,9 +72,9 @@ class Spoiler(Base):
 
 
 class SpoilerSource(Enum):
-    REDDIT = "https://www.reddit.com/"
-    SCRYFALL = "https://scryfall.com/"
-    MYTHICSPOILER = auto()
+    REDDIT = "Reddit"  # "https://www.reddit.com/"
+    SCRYFALL = "Scryfall"  # "https://scryfall.com/"
+    MYTHICSPOILER = "Mythic Spoiler"  # "https://mythicspoiler.com/"
 
 
 class FileType(Enum):

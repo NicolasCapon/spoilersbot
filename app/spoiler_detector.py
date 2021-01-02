@@ -1,10 +1,6 @@
 import re
-import logging
 import im_utils
-import cv2
 import config
-from yolo import Yolo
-from model import Image
 
 
 class SpoilerDetector:
@@ -14,6 +10,8 @@ class SpoilerDetector:
 
     distance_conf = 30
     reddit_set_reg = r"^\[(.{3,4})\]"
+    flairs = ["Spoiler", "News"]
+    domain = "self.magicTCG"
 
     def is_reddit_spoiler(self, submission):
         """
@@ -22,11 +20,15 @@ class SpoilerDetector:
         :return: True if submission is spoiler, False if not
         """
         # Discard any submission containing no external link to a potential spoiler
-        if submission.domain == "self.magicTCG":
+        if submission.domain == self.domain:
             return False
         # If submission is flaired or tag as spoiler:
-        elif submission.spoiler or submission.link_flair_text == "Spoiler":
-            logging.info("Reddit spoiler detected : [{}] {}".format(submission.id, submission.title))
+        elif submission.spoiler or submission.link_flair_text in self.flairs:
+            if submission.link_flair_text == "News" and not self.detect_set(submission.title):
+                # If submission is a news and dont comport the set code in between brackets, rejects it
+                return False
+            log = f"Reddit spoiler detected (flair={submission.link_flair_text}): [{submission.id}] {submission.title}"
+            config.bot_logger.info(log)
             return True
         else:
             return False
@@ -59,7 +61,7 @@ class SpoilerDetector:
         """
         for d, h in im_utils.get_closest_match(image, descriptors, limit=10):
             if d < confidence:
-                logging.info(f"{image} considered as duplicate.")
+                config.bot_logger.info(f"{image} considered as duplicate.")
                 return True
         return False
 

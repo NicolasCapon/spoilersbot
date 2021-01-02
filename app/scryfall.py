@@ -1,8 +1,8 @@
 import requests
 import json
-import logging
+import config
 import os
-from enum import Enum, auto
+from enum import Enum
 from urllib.parse import quote, quote_plus
 from time import sleep
 from datetime import datetime
@@ -26,7 +26,7 @@ def get_content(url):
     if r.status_code == requests.codes.ok:
         data = json.loads(r.content.decode('utf-8'))
         if data.get("object", False) == "error": 
-            logging.info("API respond an error to url : {0}".format(url))
+            config.bot_logger.info("API respond an error to url : {0}".format(url))
             return False
         if data.get("has_more", None) and data.get("next_page", None):
             content = get_content(data["next_page"])

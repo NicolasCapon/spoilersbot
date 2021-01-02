@@ -4,7 +4,6 @@ import traceback
 from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler
 from telegram.utils.helpers import mention_html
-import logging
 from spoiler_controller import SpoilerController
 
 
@@ -21,7 +20,7 @@ def main():
     # Start the Bot
     updater.start_polling()
     SpoilerController(updater=updater)
-    logging.info("Spoiler Bot Started")
+    config.bot_logger.info("Spoiler Bot Started")
     updater.bot.send_message(chat_id=config.admin_id,
                              text="Bot started")
 
