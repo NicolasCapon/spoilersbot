@@ -122,9 +122,10 @@ class SpoilerController:
                     local_session.add(i)
                     subspoilers_images.append(i)
             config.bot_logger.info(f"Yolo found {len(subspoilers_images)} cards on {len(images)} images.")
-            # Remove potentiel duplicate within the submission itself
-            subspoilers_images = self.sd.remove_duplicates(subspoilers_images, confidence=30)
-            config.bot_logger.info(f"Remove duplicate in self, list down to {len(subspoilers_images)} cards after filtration.")
+            # Remove potentiel duplicate within the submission itself if multiple cards detected
+            if len(subspoilers_images) > 1:
+                subspoilers_images = self.sd.remove_duplicates(subspoilers_images, confidence=30)
+                config.bot_logger.info(f"Remove duplicate in self, list down to {len(subspoilers_images)} cards after filtration.")
 
             set_code = self.sd.detect_set(submission.title)
             s = local_session.query(Set).filter(Set.code == set_code).first()
@@ -179,6 +180,8 @@ class SpoilerController:
 
     @staticmethod
     def update_db(context):
+        # TODO: for upcoming set, update infos like release date and card count...
+        # -> can improve the send spoiler method to include set infos on release
         update_sets()
 
     def flush_old_spoilers(self):
