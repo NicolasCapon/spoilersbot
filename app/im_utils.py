@@ -9,9 +9,6 @@ import tqdm
 import re
 from io import BytesIO
 from PIL import Image
-# from imagehash import phash
-# import distance
-# from config import hash_size
 
 
 def is_url(s: str):
@@ -61,21 +58,6 @@ def get_illustration(card_image, box=(0.5, 0.332265, 0.855655, 0.448718)):
     return card_image[y1:y2, x1:x2]
 
 
-# def hash_cv_image(image):
-#     return str(phash(Image.fromarray(image), hash_size=hash_size))
-
-
-# def hash_image_from_url(image_url):
-#     resp = requests.get(image_url)
-#     hash = None
-#     if resp.ok:
-#         img = Image.open(BytesIO(resp.content))
-#         hash = str(phash(img, hash_size=hash_size))
-#     else:
-#         logging.info(f"Can't fetch url {image_url}. [{resp}]")
-#     return hash
-
-
 def descript_image(image):
     if isinstance(image, np.ndarray):
         cv_im = image
@@ -90,10 +72,6 @@ def descript_image(image):
     return hist
 
 
-# def get_closest_hashes(phash, phashes, limit=20):
-#     return sorted([(distance.hamming(phash, h), h) for h in phashes], key=lambda x: x[0])[:limit]
-
-
 def get_closest_match(ref, objects, limit=10):
     distances = sorted([(cv.compareHist(ref.descr, np.frombuffer(o, dtype=ref.descr.dtype), cv.HISTCMP_BHATTACHARYYA) * 100, np.frombuffer(o, dtype=ref.descr.dtype)) for o in objects], key=lambda x: x[0])[:limit]
     if len(distances):
@@ -103,7 +81,8 @@ def get_closest_match(ref, objects, limit=10):
 
 def show(img, title='image opencv'):
     cv.imshow(title, img)
-    if cv.waitKey() & 0xff == 27: quit()
+    if cv.waitKey() & 0xff == 27:
+        quit()
 
 
 def resize(image, width=None, height=None, inter=cv.INTER_AREA):
@@ -218,7 +197,7 @@ def imread_url(url, flags=cv.IMREAD_UNCHANGED):
 
 
 def generate_yolo_image(folder, cards):
-    #cards = [scryfall.get_random_card() for i in range(im_num+1)]
+    # cards = [scryfall.get_random_card() for i in range(im_num+1)]
     background = imread_url(scryfall.get_image_urls(cards.pop(), size="art_crop")[0])
     if background is not None:
         images = []
@@ -245,4 +224,12 @@ def create_archive(directory, filename):
         for file in tqdm.tqdm(os.listdir(directory)):
             filepath = os.path.join(directory, file)
             tar.add(filepath, arcname=os.path.basename(filepath))
+
+
+if __name__ == "__main__":
+    from yolo import Yolo
+    import config
+    yo = Yolo(config.model, config.classes, config.conf)
+    subimages = yo.get_detected_objects("https://i.redd.it/aon35a1sebi61.png")
+    print(len(subimages))
 

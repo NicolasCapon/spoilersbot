@@ -18,7 +18,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler("test", test))
 
     # Start the Bot
-    updater.start_polling()
+    # updater.start_polling()  # TODO: consider removing this
     SpoilerController(updater=updater)
     config.bot_logger.info("Spoiler Bot Started")
     updater.bot.send_message(chat_id=config.admin_id,

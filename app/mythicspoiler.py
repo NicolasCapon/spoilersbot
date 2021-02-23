@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup, Comment, Tag, NavigableString
 
 
@@ -20,16 +21,17 @@ class MythicSpoiler:
                   "Set Number": "set_num",
                   "P/T": "p/t"}
 
-    def get_cards_from_news(self):
+    def get_cards_from_news(self, max_days=45):
         """
         Fetch /newspoilers.html and return all cards
         :return: list of tuple (card_url, card_image_url, expansion)
         """
         r = requests.get(self.url + "newspoilers.html")
         if r.ok:
-            soup = BeautifulSoup(r.text, 'html.parser')
+            soup = BeautifulSoup(self.filter_html_by_period(r.text, max_days), 'html.parser')
         else:
             return []
+
         tags = soup.find_all('a', {'href': re.compile(self.page_reg)})
         cards = []
         for tag in tags:
@@ -108,8 +110,37 @@ class MythicSpoiler:
                         infos[self.card_types[comment]] = info
         return infos
 
+    @staticmethod
+    def filter_html_by_period(html: str, past_days: int, from_day: datetime = datetime.today()):
+        """
+        Filter text including times by periods
+        :param html: str HTML code from https://www.mythicspoiler.com/newspoilers.html
+        :param past_days: int number of days to look in the past (ex: to look in the past 3 days -> past_days = 4)
+        :param from_day: datetime past date to start the filter (default now)
+        :return: str HTML code without out of periods portions
+        """
+        period_html = ""
+        to_day = from_day - timedelta(days=past_days)
+        regex = r"\n((?:January|February|March|April|May|June|July|August|September|October|November|December) " \
+                r"(?:\d{1,2}))\n"
+        periods = re.split(regex, html)
+        for n, period in enumerate(periods):
+            try:
+                t = datetime.strptime(period, "%B %d")
+            except ValueError:
+                # raise ValueError
+                continue
+
+            today = datetime.today()
+            t = t.replace(year=today.year)
+            if t > today:
+                t = t.replace(year=today.year - 1)
+            if from_day > t > to_day:
+                period_html += periods[n+1]
+        return period_html
+
 
 if __name__ == "__main__":
     m = MythicSpoiler()
-    c = m.get_cards_from_news()  # ['tsr', 'cc1']
-    print(c)
+    cards = m.get_cards_from_news()
+    print(cards)

@@ -4,6 +4,7 @@
 .gitignore
 *.weights
 *.tar.gz
+*.png
 config.py
 
 # ignore venv & git and tools

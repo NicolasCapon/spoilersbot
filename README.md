@@ -108,4 +108,5 @@ For now I will stick with histogram comparaison because I lack of results to see
 ## TODO
 - Improve log (daily file)
 - Improve Mythic spoiler detector
-- Test Orb comparaison instead of histograms
+- Test Orb comparaison instead of histograms:
+    - Create class crawl/probe to connect new source ?
