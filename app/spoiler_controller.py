@@ -24,23 +24,22 @@ class SpoilerController:
         self.scryfall_futur_cards_id = []
         self.reddit_futur_cards_subm_id = []
         self.mythicspoiler_futur_cards_url = []
-        self.limit_days = 7
+        self.limit_days = config.limit
         # List of Spoiler Objects
         limit_date = datetime.today() - timedelta(days=self.limit_days)
         self.spoiled: List[Spoiler] = Session.query(Spoiler).filter(Spoiler.found_at > limit_date).all()
         self.general_crawl()
 
     def general_crawl(self):
-        print("loop started")
         while True:
             s = time.process_time()
             self.update_db()
             self.flush_old_spoilers()
             self.reddit_crawl()
-            # self.scryfall_cards_crawl()
+            self.scryfall_cards_crawl()
             self.mythicspoiler_crawl()
             d = time.process_time() - s
-            # Ensure that a crawl is done every minute at minimum
+            # Ensure that a crawl is done at a minimum frequency
             if d < config.crawl_frequency:
                 time.sleep(config.crawl_frequency - d)
 
@@ -81,7 +80,6 @@ class SpoilerController:
                 # Try to see if it has already been spoiled
                 im = Image(location=image_url, comparator=self.comparator)
                 if not self.comparator.is_duplicate(im, [s.image for s in self.spoiled]):
-                    print(im)
                     # card not recognize as a duplicate, save then publish it
                     local_session.add(im)
                     sp = Spoiler(url=page,

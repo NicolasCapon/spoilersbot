@@ -120,13 +120,11 @@ class OrbComparator(ImageComparator):
 
     def is_duplicate(self, ref: Image, album: Album) -> bool:
         if album and (m := self.get_closest_matches(ref, album)):
-            print(m[0][0])
             return m[0][0] >= self._threshold
 
     def remove_duplicates(self, album: Album) -> Album:
         unique_album = []
         for i in range(len(album)):
-            # show(i)
             image = album.pop()
             if not self.is_duplicate(image, album):
                 unique_album.append(image)

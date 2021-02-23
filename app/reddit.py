@@ -67,17 +67,3 @@ class Reddit:
         match = reg.findall(text)
         if match:
             return match[0].lower()
-
-
-if __name__ == "__main__":
-    from yolo import Yolo
-    from spoiler_detector import SpoilerDetector
-    model = "/home/ubuntu/Desktop/yolo_custom_detection/yolov4_custom_train_last.weights"
-    classes = ["card"]
-    conf = "/home/ubuntu/Desktop/yolo_custom_detection/yolov4_custom_test.cfg"
-    y4 = Yolo(model, classes, conf)
-    sd = SpoilerDetector()
-    r = Reddit(subreddit="magicTCG")
-    r.browse_news(sd.is_reddit_spoiler)
-
-    # is_reddit_spoiler(r.reddit.submission(id="fwn9eo"))

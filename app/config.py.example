@@ -24,6 +24,10 @@ password =
 user_agent =
 username =
 
+# Crawl
+limit = 30  # Number of days max to look for spoilers
+crawl_frequency = 100  # Number of seconds min between crawls
+
 # Yolo config
 model = os.path.join(src_dir, 'yolo', 'yolov4_custom_train_last.weights')
 classes = ["card"]
