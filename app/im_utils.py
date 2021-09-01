@@ -188,7 +188,7 @@ def imread_url(url, flags=cv.IMREAD_UNCHANGED):
     """Return cv image from URL, None if url invalid"""
     if not url:
         return
-    resp = requests.get(url, stream=True)
+    resp = requests.get(url, stream=True, timeout=5)
     image = None
     if resp.ok:
         image = np.asarray(bytearray(resp.raw.read()), dtype="uint8")
