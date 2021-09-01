@@ -176,8 +176,8 @@ class SpoilerController:
                                         photo=spoiler.image.location,
                                         caption=caption,
                                         parse_mode="HTML")
-        # Avoid spam
-        sleep(0.1)
+        # Avoid spam: 20 messages per minute rate
+        sleep(4)
 
     @staticmethod
     def update_db():
